@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>The Loom — a game of possible lives</title>
+<style>
+:root{color-scheme:light;--bg:#eae5db;--paper:#fbf7ee;--ink:#302934;--muted:#706779;--line:#d3c8b9;--gain:#216c5b;--loss:#b64b49;--same:#9b8d79;--gold:#97631e;--tint:#f1e8d7;--mono:ui-monospace,SFMono-Regular,Consolas,monospace;--serif:Georgia,'Times New Roman',serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--serif);padding:20px 18px 40px}button,select{font:inherit;color:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{cursor:default;opacity:.45}button:focus-visible,select:focus-visible{outline:3px solid var(--gain);outline-offset:4px}button,.panel,dialog{border-radius:10px}button{border:1px solid var(--line);background:var(--paper);padding:10px 15px;min-height:44px}button:hover:not(:disabled){border-color:var(--ink)}.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}.quiet{background:transparent}.wrap{max-width:860px;margin:0 auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:5px 0 22px}.brand{font:500 39px/1.1 var(--serif);letter-spacing:-1px}.tagline{font:11px/1.6 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-top:6px}.tools{display:flex;gap:8px}.tools button{font:12px var(--mono);padding:9px 11px}.panel{background:var(--paper);border:1px solid var(--line);padding:24px}.eyebrow{font:11px/1.5 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}h1,h2,h3,p{margin-top:0}h1{font-size:29px;line-height:1.22;font-weight:500;margin:7px 0 12px}h2{font-size:27px;font-weight:500;line-height:1.25}h3{font:500 18px var(--serif)}.brief{margin-bottom:15px;max-width:69ch}.rule{border-left:3px solid var(--line);padding:8px 12px;background:#f4f0e7;font-size:15px;margin:10px 0}.rule.assumption{border-left-color:var(--gold);background:#f4ead7}.rule-label{font:11px var(--mono);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}.mission{margin-top:20px;padding-top:17px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.mission p{margin:0;font-size:19px}.mean{font:12px/1.6 var(--mono);color:var(--muted)}.mean strong{color:var(--ink);font-size:19px;font-weight:500}.board-panel{margin-top:14px;padding:20px 24px 18px}.board-head{display:flex;justify-content:space-between;gap:20px;font:12px/1.5 var(--mono)}.board-head>div{max-width:47%}.board-head>div:last-child{text-align:right}.board-head span{color:var(--muted);font-size:11px}.loom{position:relative;margin:10px 0 0;isolation:isolate}.loom svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.pins{position:absolute;inset:0}.peg{position:absolute;width:46px;height:46px;border:1.5px solid #b5a48b;border-radius:50%;background:var(--paper);font:500 20px var(--serif);display:flex;align-items:center;justify-content:center;padding:0}.peg.left{pointer-events:none;z-index:2}.peg.right{touch-action:none;z-index:3}.peg.right[aria-pressed=true]{box-shadow:0 0 0 4px var(--paper),0 0 0 6px var(--ink)}.peg.right.dragging{box-shadow:0 0 0 5px #dbbd88}.peg.right.drop{outline:3px solid var(--gain);outline-offset:4px}.peg .group{position:absolute;top:47px;font:10px var(--mono);color:var(--muted);white-space:nowrap}.board-status{font:12px/1.55 var(--mono);min-height:38px;margin-top:6px;color:var(--muted)}.board-status.error{color:var(--loss)}.board-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:14px;border-top:1px solid var(--line)}.legend{display:flex;gap:13px;flex-wrap:wrap;font:11px/1.5 var(--mono)}.key{display:inline-flex;align-items:center;gap:5px}.key i{width:15px;height:3px;display:block;background:var(--gain)}.key.loss i{background:var(--loss)}.key.same i{background:var(--same);height:0;border-top:3px dashed var(--same)}.counts{font:12px/1.6 var(--mono);color:var(--muted)}.counts b{color:var(--ink);font-weight:500}.target-readout{margin:16px 0 0;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.target-readout strong{font:500 27px var(--serif)}.target-readout span{font:12px/1.5 var(--mono)}.reset-actions{display:flex;gap:8px}.reset-actions button{font:11px var(--mono);padding:8px 10px}.record{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.bound{padding:18px;min-width:0}.bound-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.bound .value{font:500 25px var(--serif)}.bound .mini{height:50px;margin:7px 0}.bound svg{width:100%;height:50px}.bound .placeholder{color:var(--muted);font:12px/1.5 var(--mono);padding:12px 0}.bound .actions{display:flex;gap:6px;flex-wrap:wrap}.bound button{font:12px var(--mono);padding:8px 10px}.publish{width:100%;margin-top:15px;font:14px var(--mono);letter-spacing:.02em;min-height:50px}.publish-hint{text-align:center;font:12px/1.5 var(--mono);color:var(--muted);margin:8px 0 18px}.progress{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-top:22px;font:11px var(--mono);color:var(--muted)}.dots{display:flex;gap:6px;flex-wrap:wrap}.dot{width:9px;height:9px;border:1px solid var(--line);border-radius:50%;background:var(--paper)}.dot.done{background:var(--gain);border-color:var(--gain)}.dot.assisted{background:var(--gold);border-color:var(--gold)}footer{margin-top:25px;text-align:center;font:12px var(--mono);color:var(--muted)}footer a{color:inherit;text-decoration:none}dialog{background:var(--paper);color:var(--ink);border:1px solid var(--line);padding:26px;max-width:590px;width:calc(100% - 30px);max-height:calc(100dvh - 50px);overflow:auto;box-shadow:0 20px 65px #30293433}dialog::backdrop{background:#30293488;backdrop-filter:blur(3px)}dialog p{margin:0 0 15px}dialog .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}dialog button{font:12px var(--mono)}dialog ul{padding-left:20px}.verdict-stamp{font:11px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--gain);margin-bottom:8px}.verdict-stamp.no{color:var(--loss)}.verdict-range{font:500 31px var(--serif);margin:12px 0}.fine{font:12px/1.6 var(--mono);color:var(--muted)}.browse-list{display:grid;gap:7px}.browse-list button{text-align:left;font:14px var(--serif)}.browse-list small{font:11px var(--mono);color:var(--muted);display:block;margin-top:3px}.intro-knot{display:flex;gap:8px;margin-bottom:23px}.intro-knot span{height:4px;width:44px;background:var(--gain);transform:rotate(-14deg)}.intro-knot span:nth-child(2){background:var(--loss);transform:rotate(14deg)}.intro-knot span:nth-child(3){background:var(--same);transform:rotate(-14deg)}[hidden]{display:none!important}
+@media(max-width:600px){body{padding:14px 12px 25px}.panel{padding:18px}.board-panel{padding:17px 16px}.brand{font-size:34px}h1{font-size:25px}.record{gap:9px}.bound{padding:13px}.bound .actions{display:grid;grid-template-columns:1fr}.bound button{font-size:11px}.mission p{font-size:18px}.target-readout strong{font-size:24px}.peg{width:44px;height:44px}.peg .group{top:45px}.board-status{min-height:54px}.board-head{font-size:11px}.board-head span{font-size:10px}.board-bottom{align-items:flex-start}.tools{gap:6px}.tools button{padding:8px 9px}dialog{padding:23px}.bound-top{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+ <header><div><div class="brand">The Loom</div><div class="tagline">a game of possible lives</div></div><nav class="tools" aria-label="Game"><button id="help-btn">How to play</button><button id="browse-btn">Commissions</button></nav></header>
+ <section class="panel" aria-labelledby="case-title">
+  <div class="eyebrow" id="case-number"></div><h1 id="case-title"></h1><p class="brief" id="brief"></p>
+  <div class="rule"><span class="rule-label">Evidence</span><span id="evidence"></span></div>
+  <div class="rule assumption" id="assumption-box" hidden><span class="rule-label">Additional assumption</span><span id="assumption-text"></span></div>
+  <div class="mission"><p id="mission"></p><div class="mean">Average effect, already known<br><strong id="mean"></strong> income units</div></div>
+ </section>
+ <section class="panel board-panel" aria-label="The weaving board">
+  <div class="board-head"><div>Without programme<br><span>possible income</span></div><div>With programme<br><span>possible income</span></div></div>
+  <div class="loom" id="loom" role="group" aria-label="Select two right endpoints, or drag one onto another, to swap their threads. Each thread is a hypothetical counterfactual pairing."><svg id="threads" role="img" aria-label="Current hypothetical pairing"></svg><div class="pins" id="pins"></div></div>
+  <div class="board-status" id="board-status" aria-live="polite"></div>
+  <div class="board-bottom"><div class="legend" aria-label="Thread colors"><span class="key"><i></i>gain +</span><span class="key same"><i></i>same 0</span><span class="key loss"><i></i>loss −</span></div><div class="counts" id="counts"></div></div>
+  <div class="target-readout"><div><span id="current-label"></span><br><strong id="current-value" aria-live="polite"></strong></div><div class="reset-actions"><button id="undo-btn" disabled>Undo swap</button><button id="reset-btn">Reset weave</button></div></div>
+  <div class="fine" id="thread-weight" style="margin-top:12px"></div>
+ </section>
+ <section class="record" aria-label="Your proposed bounds">
+  <div class="panel bound"><div class="bound-top"><span class="eyebrow">Smallest possible</span><span class="value" id="low-value">—</span></div><div class="mini" id="low-mini"><div class="placeholder">Keep a witness weave.</div></div><div class="actions"><button id="keep-low">Keep this weave</button><button id="restore-low" disabled>Restore</button></div></div>
+  <div class="panel bound"><div class="bound-top"><span class="eyebrow">Largest possible</span><span class="value" id="high-value">—</span></div><div class="mini" id="high-mini"><div class="placeholder">Keep a witness weave.</div></div><div class="actions"><button id="keep-high">Keep this weave</button><button id="restore-high" disabled>Restore</button></div></div>
+ </section>
+ <button class="primary publish" id="publish-btn" disabled>Publish the bounds</button><div class="publish-hint">Keep two witness weaves. If the share is identified, the two bounds coincide.</div>
+ <div class="progress"><div class="dots" id="docket" aria-label="Completed commissions"></div><span id="progress-text"></span></div>
+ <footer><a href="https://steffenhuck.github.io" target="_blank" rel="noopener">steffen huck</a></footer>
+</main>
+<dialog id="welcome" aria-labelledby="welcome-title">
+ <div class="intro-knot" aria-hidden="true"><span></span><span></span><span></span></div><h2 id="welcome-title">The Loom</h2>
+ <p>The Ministry knows what incomes would look like with its programme, and without it. It knows the average gain. Now it wants to know whose lives would improve.</p>
+ <p>The two columns are exact income distributions. Each thread joins one possible life without the programme to that same person’s possible life with it. <strong>The threads are hypotheses.</strong> The records do not tell you how to join them.</p>
+ <p>Reweave the lives without changing the evidence. Find the smallest and largest shares that could satisfy each commission, keep a weave for each, and publish your bounds.</p>
+ <p>Sometimes the share is fully identified. Sometimes a range is the strongest possible conclusion. Both are a result worth publishing.</p>
+ <button class="primary" id="begin-btn">Open the first commission</button>
+</dialog>
+<dialog id="help" aria-labelledby="help-title"><h2 id="help-title">How to weave</h2>
+ <p><strong>Change a possible world.</strong> Tap two right endpoints to exchange their threads, or drag one onto another. Keyboard users can tab to the endpoints and press Enter or Space. Every endpoint is used once.</p>
+ <p><strong>Read the threads.</strong> The number beside a thread is its income change: with minus without. Green threads gain, grey threads tie, red threads lose. The commission may ask about gains, losses, or gains of a particular size.</p>
+ <p><strong>Keep two witnesses.</strong> Save a weave with as few qualifying people as possible, then one with as many as possible. These snapshots remain fixed while you experiment. Restore one to continue working on it.</p>
+ <p><strong>Publish.</strong> Both bounds must be attainable and sharp. A referee checks all admissible pairings. After an unsuccessful submission, you can keep trying or ask to see a counterexample; using one is marked in your record.</p>
+ <p><strong>Respect the brief.</strong> District labels are additional observed information. No harm and preserved ranks are assumptions, explicitly marked as such. The board rejects swaps that violate them.</p>
+ <p class="fine">The records are exact population frequencies, not a small random sample. Each of the n threads carries 1/n of the population. The game isolates identification from sampling error. No secret “true” weave is drawn.</p>
+ <div class="actions"><button class="primary" data-close="help">Return to the loom</button></div>
+</dialog>
+<dialog id="browse" aria-labelledby="browse-title"><h2 id="browse-title">The commissions</h2><div class="browse-list" id="browse-list"></div><div class="actions"><button id="free-btn">New free commission</button><button data-close="browse">Return</button></div></dialog>
+<dialog id="verdict" aria-labelledby="verdict-title"><div class="verdict-stamp" id="verdict-stamp"></div><h2 id="verdict-title"></h2><div class="verdict-range" id="verdict-range"></div><div id="verdict-body"></div><div class="actions"><button class="primary" id="verdict-main"></button><button id="verdict-counter" hidden>Show a counterexample</button><button id="verdict-return">Study the board</button></div></dialog>
+<script id="loom-engine">
+/* The complete game and its exact engine are contained in this file.
+   No network requests, libraries, fonts or build step are required.
+   a[i] and b[j] are equal-mass marginal atoms. A permutation p pairs them.
+   Validity depends only on published evidence and explicit restrictions.
+   Every claim is adjudicated against ALL valid permutations, never a secret truth. */
+'use strict';
+(function (root) {
+ const cases = [
+  {id:'average',title:'An average is not a life',a:[0,1,2,3],b:[1,2,3,4],target:'benefit',rule:'none',brief:'The Minister announces an average gain of one. The commission asks a more personal question: what share of the population could be better off?',lesson:'The average gain is one under every weave. It is compatible with a gain for everyone, or a gain of four for one quarter and no change for the rest. The evidence identifies the average, but leaves the share benefiting between one quarter and everyone.'},
+  {id:'unchanged',title:'The unchanged average',a:[0,1,2,3],b:[0,1,2,3],target:'benefit',rule:'none',brief:'The national income distributions look exactly the same. The Minister proposes to call the programme irrelevant. Could lives still have changed?',lesson:'Identical income distributions do not imply identical individual outcomes. A cyclic weave can give three quarters a gain and the remaining quarter a loss. A zero average also prevents everyone from gaining strictly.'},
+  {id:'losses',title:'The other side of the account',a:[0,1,2,3,4,5],b:[1,2,3,4,5,6],target:'harm',rule:'none',brief:'Average income rises by one again. This time the opposition asks how many people could have lost income. Weave their strongest and weakest cases.',lesson:'A positive average can coexist with losses for a majority. Here as many as four of the six groups can lose. Those with untreated incomes zero and one cannot lose, because every treated income is at least one.'},
+  {id:'separated',title:'Beyond every old income',a:[0,1,2,2,3,3],b:[4,4,5,5,6,6],target:'benefit',rule:'none',brief:'Even the lowest income with the programme exceeds the highest income without it. The records still do not pair individual lives. Does that matter for this question?',lesson:'Every possible thread rises. The share benefiting is fully identified even though the records leave many different joint distributions, and different sizes of individual gains, possible. Identification belongs to the question being asked.'},
+  {id:'districts',title:'The badge on the record',a:[0,1,2,3,4,5],b:[1,2,3,4,5,6],ga:['North','North','North','South','South','South'],gb:['North','North','North','South','South','South'],target:'benefit',rule:'none',brief:'The archive has recovered a district label fixed before the programme. It knows both income distributions within each district. A possible life must remain in its own district.',lesson:'Each district has a positive average gain, so at least one group in each must benefit. The sharp lower bound is two of six. Without the observed district labels it would be only one of six. Extra information has narrowed the bounds.'},
+  {id:'district-proof',title:'Two districts, one answer',a:[0,0,1,5,6,6],b:[2,3,3,1,2,4],ga:['North','North','North','South','South','South'],gb:['North','North','North','South','South','South'],target:'benefit',rule:'none',brief:'North’s worst possible income with the programme beats its best without it. In South the ordering runs the other way. Identify the share benefiting in the whole country.',lesson:'All of North benefits and none of South does. The share benefiting is exactly one half, while the precise gains and losses can still vary across admissible weaves. Conditional evidence can identify the target without identifying every individual effect.'},
+  {id:'no-harm',title:'The promise of no harm',a:[0,1,2,3],b:[1,2,3,4],target:'large',threshold:2,rule:'noharm',brief:'For this commission, assume that nobody loses income. Find the share whose gain could reach at least two units. A promise constrains the loom; it does not fill in every missing thread.',lesson:'With no losses and a total gain of four across the four groups, at most two groups can gain at least two each. Both zero and two are attainable. Without the no-harm assumption, three groups could gain at least two, financed by a loss for the fourth.'},
+  {id:'zero-no-harm',title:'No harm and no growth',a:[0,0,1,1,2,2],b:[0,0,1,1,2,2],target:'benefit',rule:'noharm',brief:'The average effect is zero. The commission again assumes nobody loses. Can anybody strictly gain?',lesson:'Nonnegative individual effects cannot sum to zero unless every one is zero. Here the no-harm assumption turns a partly identified question into a fully identified one. The assumption is doing real work.'},
+  {id:'ranks',title:'Ranks held in place',a:[0,1,2,3,4,5],b:[1,1,3,3,5,5],target:'benefit',rule:'rank',brief:'This commission assumes that the programme never reverses two people’s income ordering. Equal incomes may tie. Work out how much uncertainty survives that restriction.',lesson:'Preserving ranks pairs the ordered income distributions. The effect alternates between a gain of one and no change, so exactly half benefit. The records alone did not supply these links; rank preservation supplied them.'},
+  {id:'large-gains',title:'The largest winners',a:[0,1,2,3,4,5,6,7],b:[1,2,3,4,5,6,7,8],target:'large',threshold:3,rule:'none',brief:'Eight groups, an average gain of one, and no additional restrictions. The final commission asks how many people could gain at least three income units.',lesson:'The common average does not determine the prevalence of large gains. Up to six of eight groups can gain at least three, with losses concentrated among the remaining two. It is also possible that nobody gains as much as three.'}
+ ];
+ function qualifies(c,d) { return c.target==='harm' ? d<0 : c.target==='large' ? d>=c.threshold : d>0; }
+ function count(c,p) { return p.reduce((sum,j,i)=>sum+Number(qualifies(c,c.b[j]-c.a[i])),0); }
+ function effects(c,p) { return p.map((j,i)=>c.b[j]-c.a[i]); }
+ function mean(c) { return (c.b.reduce((s,x)=>s+x,0)-c.a.reduce((s,x)=>s+x,0))/c.a.length; }
+ function edgeAllowed(c,i,j) { return (!c.ga || c.ga[i]===c.gb[j]) && (c.rule!=='noharm' || c.b[j]>=c.a[i]); }
+ function reason(c,p) {
+  const n=c.a.length;
+  if(p.length!==n || new Set(p).size!==n || p.some(j=>!Number.isInteger(j)||j<0||j>=n)) return 'Every endpoint must be used exactly once.';
+  for(let i=0;i<n;i++) {
+   if(c.ga && c.ga[i]!==c.gb[p[i]]) return 'The district labels are observed. A possible life cannot move between districts.';
+   if(c.rule==='noharm' && c.b[p[i]]<c.a[i]) return 'This commission assumes no harm. That swap would make someone worse off.';
+  }
+  if(c.rule==='rank') for(let i=0;i<n;i++) for(let k=i+1;k<n;k++)
+   if((c.a[i]-c.a[k])*(c.b[p[i]]-c.b[p[k]])<0) return 'This commission assumes preserved ranks. That swap reverses two people’s income ordering.';
+  return '';
+ }
+ function solve(c) {
+  const n=c.a.length, p=[], used=Array(n).fill(false);
+  let min=n+1,max=-1,minP=null,maxP=null,total=0;
+  const counts=new Set();
+  function visit(i,k) {
+   if(i===n) { total++;counts.add(k);if(k<min){min=k;minP=p.slice();}if(k>max){max=k;maxP=p.slice();}return; }
+   for(let j=0;j<n;j++) {
+    if(used[j] || !edgeAllowed(c,i,j)) continue;
+    if(c.rule==='rank' && p.some((jk,ik)=>(c.a[i]-c.a[ik])*(c.b[j]-c.b[jk])<0)) continue;
+    used[j]=true;p.push(j);visit(i+1,k+Number(qualifies(c,c.b[j]-c.a[i])));p.pop();used[j]=false;
+   }
+  }
+  visit(0,0);
+  if(!total) throw new Error('The published restrictions leave no admissible weave.');
+  return {min,max,minP,maxP,total,counts:[...counts].sort((a,b)=>a-b)};
+ }
+ function adjudicate(c,lo,hi,solution) {
+  if(!lo || !hi) return {type:'missing'};
+  const bad=reason(c,lo)||reason(c,hi);if(bad)return {type:'invalid',reason:bad};
+  const low=count(c,lo),high=count(c,hi),s=solution||solve(c);
+  if(low>high) return {type:'reversed',low,high};
+  if(low===s.min && high===s.max) return {type:s.min===s.max?'point':'partial',low,high};
+  if(low>s.min) return {type:'lower',low,high,witness:s.minP.slice(),count:s.min};
+  return {type:'upper',low,high,witness:s.maxP.slice(),count:s.max};
+ }
+ function shuffle(a,r=Math.random) {a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+ function randomCase(r=Math.random) {
+  const n=[4,6,8][Math.floor(r()*3)],mode=Math.floor(r()*5),a=[],b=[];
+  for(let i=0;i<n;i++) a.push(Math.floor(r()*8));a.sort((x,y)=>x-y);
+  for(let i=0;i<n;i++) b.push(mode===3?a[i]+Math.floor(r()*4):Math.floor(r()*10));b.sort((x,y)=>x-y);
+  const target=['benefit','harm','large'][Math.floor(r()*3)];
+  const c={id:'free',title:'A fresh commission',a,b,target:mode===3&&target==='harm'?'benefit':target,threshold:2+Math.floor(r()*2),rule:mode===3?'noharm':mode===4?'rank':'none',brief:'A new set of exact records has reached the loom. Read the commission, respect its evidence and assumptions, and construct the strongest bounds.',lesson:'These bounds are the minimum and maximum across every admissible weave. Both are attainable. A narrower range would exclude a possible world that satisfies all the published information.'};
+  if(mode===2){c.ga=Array.from({length:n},(_,i)=>i<n/2?'North':'South');c.gb=c.ga.slice();}
+  return c;
+ }
+ root.LoomEngine=Object.freeze({cases,qualifies,count,effects,mean,edgeAllowed,reason,solve,adjudicate,shuffle,randomCase});
+})(globalThis);
+</script>
+<script id="loom-ui">
+'use strict';
+(function(){
+ const E=globalThis.LoomEngine,$=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ let c,index=0,p=[],initial=[],selected=null,history=[],saved={low:null,high:null},sol,assisted=false,accepted=false,attempts=0;
+ let shownPositions=[],anim=null,drag=null,suppressClick=false,lastVerdict=null;
+ let records={};try{records=JSON.parse(localStorage.getItem('the-loom-record-v1')||'{}')||{};}catch(e){}
+ if(typeof records!=='object'||Array.isArray(records))records={};
+ const fmt=x=>Number.isInteger(x)?String(x):x.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+ const signed=x=>x>0?'+'+fmt(x):x<0?'−'+fmt(-x):'0';
+ const pct=(k,n)=>fmt(Math.round(1000*k/n)/10)+'%';
+ const fraction=k=>k+'/'+c.a.length+' · '+pct(k,c.a.length);
+ const phrase=()=>c.target==='harm'?'lose income':c.target==='large'?'gain at least '+c.threshold+' units':'gain income';
+ const noun=()=>c.target==='harm'?'Share losing income':c.target==='large'?'Share gaining at least '+c.threshold+' units':'Share benefiting';
+ const row=i=>38+i*(c.ga?78:66);
+ const color=d=>d>0?'var(--gain)':d<0?'var(--loss)':'var(--same)';
+ function svgNode(tag,attrs,text){const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs||{}))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e;}
+ function open(id){const d=$(id);if(!d.open)d.showModal();}
+ function close(id){if($(id).open)$(id).close();}
+ function say(text,error=false){$('board-status').textContent=text;$('board-status').classList.toggle('error',error);}
+ function baseMessage(){return 'Tap two right endpoints, or drag one onto another, to exchange their threads.';}
+ function drawLines(pos){
+  const w=$('loom').clientWidth,h=row(c.a.length-1)+(c.ga?70:44),x0=24,x1=w-24,bend=(x1-x0)*.44;
+  $('loom').style.height=h+'px';$('threads').setAttribute('viewBox','0 0 '+w+' '+h);$('threads').replaceChildren();
+  $('threads').appendChild(svgNode('title',{},'Hypothetical pairs. '+E.effects(c,p).map((d,i)=>'Group '+(i+1)+': '+c.a[i]+' to '+c.b[p[i]]+', change '+signed(d)).join('; ')));
+  for(const x of [x0,x1])$('threads').appendChild(svgNode('line',{x1:x,y1:10,x2:x,y2:h-15,stroke:'var(--line)','stroke-width':2}));
+  const active=selected===null?-1:p.indexOf(selected);
+  p.forEach((j,i)=>{
+   const d=c.b[j]-c.a[i],y=row(i),yy=row(pos[i]);
+   $('threads').appendChild(svgNode('path',{d:'M '+x0+' '+y+' C '+(x0+bend)+' '+y+' '+(x1-bend)+' '+yy+' '+x1+' '+yy,fill:'none',stroke:color(d),'stroke-width':i===active?7:4.5,'stroke-linecap':'round','stroke-dasharray':d===0?'7 5':'none',opacity:active<0||active===i?.87:.32}));
+   $('threads').appendChild(svgNode('text',{x:x0+34,y:y-11,fill:'var(--ink)','font-size':12,'font-family':'ui-monospace,monospace'},signed(d)));
+  });
+  shownPositions=pos.slice();
+ }
+ function placePins(){
+  const w=$('loom').clientWidth,n=c.a.length;
+  for(let j=0;j<n;j++){
+   const left=$('pins').querySelector('[data-left="'+j+'"]'),right=$('pins').querySelector('[data-right="'+j+'"]');
+   left.style.left='2px';left.style.top=(row(j)-23)+'px';right.style.left=(w-47)+'px';right.style.top=(row(j)-23)+'px';
+   right.setAttribute('aria-pressed',String(selected===j));
+   right.setAttribute('aria-label','Treated endpoint '+(j+1)+', income '+c.b[j]+(c.gb?', '+c.gb[j]:'')+'. Paired with untreated income '+c.a[p.indexOf(j)]+'. Select to swap.');
+  }
+ }
+ function render(animate=false){
+  if(anim!==null)cancelAnimationFrame(anim);anim=null;
+  const old=shownPositions.length===p.length?shownPositions.slice():p.slice();placePins();
+  const ef=E.effects(c,p),up=ef.filter(d=>d>0).length,down=ef.filter(d=>d<0).length;
+  $('counts').innerHTML='<b>'+up+'</b> gain · <b>'+(p.length-up-down)+'</b> same · <b>'+down+'</b> lose';
+  $('current-label').textContent=noun()+' in this weave';$('current-value').textContent=fraction(E.count(c,p));$('undo-btn').disabled=!history.length;
+  if(animate&&!reduced){const start=performance.now();const frame=now=>{const t=Math.min(1,(now-start)/280),f=t*t*(3-2*t);drawLines(p.map((j,i)=>old[i]+(j-old[i])*f));anim=t<1?requestAnimationFrame(frame):null;};anim=requestAnimationFrame(frame);}else drawLines(p);
+  updateSaved();
+ }
+ function buildPins(){
+  $('pins').replaceChildren();
+  for(let j=0;j<c.a.length;j++)for(const side of ['left','right']){
+   const node=document.createElement(side==='right'?'button':'span');node.className='peg '+side;node.dataset[side]=j;node.textContent=side==='right'?c.b[j]:c.a[j];
+   if(c.ga){const g=document.createElement('span');g.className='group';g.textContent=side==='right'?c.gb[j]:c.ga[j];node.appendChild(g);}
+   if(side==='right'){
+    node.type='button';node.addEventListener('click',()=>{if(suppressClick){suppressClick=false;return;}select(j);});
+    node.addEventListener('pointerdown',e=>{if(e.button!==0)return;drag={j,startX:e.clientX,startY:e.clientY,moved:false,target:null};node.setPointerCapture(e.pointerId);});
+    node.addEventListener('pointermove',e=>moveDrag(e));node.addEventListener('pointerup',e=>endDrag(e));node.addEventListener('pointercancel',()=>cancelDrag());
+   }
+   $('pins').appendChild(node);
+  }
+ }
+ function moveDrag(e){
+  if(!drag)return;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>7)drag.moved=true;if(!drag.moved)return;
+  const nodes=[...$('pins').querySelectorAll('[data-right]')];drag.target=null;
+  nodes.forEach(node=>{const j=+node.dataset.right,r=node.getBoundingClientRect();node.classList.toggle('dragging',j===drag.j);const hit=j!==drag.j&&Math.abs(e.clientX-r.x-r.width/2)<38&&Math.abs(e.clientY-r.y-r.height/2)<29;node.classList.toggle('drop',hit);if(hit)drag.target=j;});
+ }
+ function cancelDrag(){drag=null;$('pins').querySelectorAll('.peg').forEach(node=>node.classList.remove('drop','dragging'));}
+ function endDrag(){if(!drag)return;const d={...drag};cancelDrag();if(d.moved){suppressClick=true;setTimeout(()=>suppressClick=false,150);if(d.target!==null)swap(d.j,d.target);else say('Drop onto another right endpoint to exchange the threads.');}}
+ function swap(j,k){
+  const next=p.slice(),i=next.indexOf(j),l=next.indexOf(k);[next[i],next[l]]=[next[l],next[i]];const bad=E.reason(c,next);
+  if(bad){say(bad,true);selected=null;render();return false;}
+  history.push(p.slice());p=next;selected=null;say('Threads exchanged. Every observed income stays in place.');render(true);return true;
+ }
+ function select(j){
+  if(selected===null){selected=j;say('Income '+c.b[j]+' selected. Choose another right endpoint.');render();}
+  else if(selected===j){selected=null;say(baseMessage());render();}
+  else swap(selected,j);
+ }
+ function mini(perm){
+  const svg=svgNode('svg',{viewBox:'0 0 220 50',role:'img','aria-label':'Saved witness pairing'}),n=perm.length;
+  perm.forEach((j,i)=>svg.appendChild(svgNode('path',{d:'M 4 '+(5+40*i/(n-1))+' C 85 '+(5+40*i/(n-1))+' 135 '+(5+40*j/(n-1))+' 216 '+(5+40*j/(n-1)),fill:'none',stroke:color(c.b[j]-c.a[i]),'stroke-width':1.7,'stroke-dasharray':c.b[j]===c.a[i]?'4 3':'none'})));
+  return svg;
+ }
+ function updateSaved(){
+  for(const side of ['low','high']){
+   $(side+'-value').textContent=saved[side]?pct(E.count(c,saved[side]),c.a.length):'—';
+   $(side+'-mini').replaceChildren();
+   if(saved[side])$(side+'-mini').appendChild(mini(saved[side]));else{const t=document.createElement('div');t.className='placeholder';t.textContent='Keep a witness weave.';$(side+'-mini').appendChild(t);}
+   $('restore-'+side).disabled=!saved[side];
+  }
+  $('publish-btn').disabled=!saved.low||!saved.high;
+ }
+ function keep(side){saved[side]=p.slice();updateSaved();say('Kept '+fraction(E.count(c,p))+' as your '+(side==='low'?'lower':'upper')+' bound.');}
+ function restore(side){if(!saved[side])return;history.push(p.slice());p=saved[side].slice();selected=null;say('Saved witness restored. Its snapshot stays in your report.');render(true);}
+ function storeRecord(){if(index<0)return;const key=c.id,old=records[key];if(!old||old.assisted&&!assisted)records[key]={assisted,attempts};try{localStorage.setItem('the-loom-record-v1',JSON.stringify(records));}catch(e){}renderDocket();}
+ function renderDocket(){
+  $('docket').replaceChildren();E.cases.forEach(item=>{const el=document.createElement('span'),r=records[item.id];el.className='dot'+(r?(r.assisted?' assisted':' done'):'');el.setAttribute('aria-label',item.title+': '+(r?(r.assisted?'completed with a counterexample':'completed'):'not completed'));$('docket').appendChild(el);});
+  $('progress-text').textContent=E.cases.filter(item=>records[item.id]).length+' / '+E.cases.length+' commissions upheld';
+ }
+ function start(which){
+  index=which;c=which<0?E.randomCase():E.cases[which];sol=E.solve(c);accepted=false;assisted=false;attempts=0;selected=null;history=[];saved={low:null,high:null};lastVerdict=null;shownPositions=[];
+  const identity=c.a.map((_,i)=>i);initial=E.reason(c,identity)?sol.minP.slice():identity;p=initial.slice();
+  $('case-number').textContent=which<0?'The open archive · free commission':'Commission '+(which+1)+' of '+E.cases.length;
+  $('case-title').textContent=c.title;$('brief').textContent=c.brief;
+  $('evidence').textContent=c.a.length+' equally weighted groups in each exact income distribution. '+(c.ga?'District labels are known in both regimes; pair only within the same district.':'The records supply no links between the two columns.');
+  $('assumption-box').hidden=c.rule==='none';$('assumption-text').textContent=c.rule==='noharm'?'No person has a lower income with the programme than without it.':c.rule==='rank'?'No two people reverse their income ordering between the two regimes. Ties are allowed.':'';
+  $('mission').textContent='Bound the share who '+phrase()+'.';$('mean').textContent=signed(E.mean(c));
+  $('thread-weight').textContent='Each thread carries 1/'+c.a.length+' of the population ('+pct(1,c.a.length)+'). Every link is hypothetical.';
+  close('browse');close('verdict');buildPins();say(baseMessage());render();renderDocket();
+  window.scrollTo({top:0,behavior:reduced?'instant':'smooth'});
+ }
+ function publish(){
+  attempts++;lastVerdict=E.adjudicate(c,saved.low,saved.high,sol);const v=lastVerdict,ok=v.type==='point'||v.type==='partial';
+  $('verdict-stamp').textContent=ok?'Finding upheld':'Referee’s report';$('verdict-stamp').classList.toggle('no',!ok);$('verdict-counter').hidden=!v.witness;
+  $('verdict-range').textContent=saved.low&&saved.high?pct(E.count(c,saved.low),c.a.length)+' – '+pct(E.count(c,saved.high),c.a.length):'';
+  if(ok){accepted=true;storeRecord();$('verdict-title').textContent=v.type==='point'?'Point identified.':'Sharp bounds.';$('verdict-body').innerHTML='<p>'+c.lesson+'</p><p class="fine">'+(v.type==='point'?'Every admissible weave gives the same answer to this commission.':'Your two witnesses attain both endpoints. No narrower bounds are justified by the published information.')+(assisted?' You used a referee’s counterexample; the commission is marked amber in your record.':' The commission is marked green in your record.')+'</p>';$('verdict-main').textContent=index===E.cases.length-1||index<0?'New free commission':'Next commission';}
+  else{$('verdict-title').textContent='The bounds are not yet sharp.';
+   const message=v.type==='lower'?'Another admissible weave has fewer people who '+phrase()+'. Your proposed lower bound excludes a possible world.':v.type==='upper'?'Another admissible weave has more people who '+phrase()+'. Your proposed upper bound excludes a possible world.':v.type==='reversed'?'Your proposed lower bound exceeds your upper bound. Check the two saved witnesses.':v.type==='invalid'?v.reason:'Keep a lower and an upper witness before publishing.';
+   $('verdict-body').innerHTML='<p>'+message+'</p><p class="fine">You may return to the board and revise your report. Asking for a counterexample loads a valid witness and marks this attempt as assisted.</p>';$('verdict-main').textContent='Return and revise';
+  }
+  open('verdict');
+ }
+ function browse(){
+  $('browse-list').replaceChildren();E.cases.forEach((item,i)=>{const b=document.createElement('button');b.textContent=(i+1)+'. '+item.title;const small=document.createElement('small');small.textContent=item.ga?'Additional observed information':item.rule==='none'?'Marginal evidence only':item.rule==='noharm'?'Assumption: no harm':'Assumption: rank preservation';b.appendChild(small);b.onclick=()=>start(i);$('browse-list').appendChild(b);});open('browse');
+ }
+ $('help-btn').onclick=()=>open('help');$('browse-btn').onclick=browse;$('begin-btn').onclick=()=>close('welcome');
+ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>close(b.dataset.close));
+ $('keep-low').onclick=()=>keep('low');$('keep-high').onclick=()=>keep('high');$('restore-low').onclick=()=>restore('low');$('restore-high').onclick=()=>restore('high');
+ $('undo-btn').onclick=()=>{if(!history.length)return;p=history.pop();selected=null;say('Previous weave restored. Saved witnesses are unchanged.');render(true);};
+ $('reset-btn').onclick=()=>{history.push(p.slice());p=initial.slice();selected=null;say('Opening weave restored. Saved witnesses are unchanged.');render(true);};
+ $('publish-btn').onclick=publish;$('free-btn').onclick=()=>start(-1);
+ $('verdict-main').onclick=()=>{if(lastVerdict&&(lastVerdict.type==='point'||lastVerdict.type==='partial'))start(index<0||index===E.cases.length-1?-1:index+1);else close('verdict');};
+ $('verdict-return').onclick=()=>close('verdict');$('verdict-counter').onclick=()=>{if(!lastVerdict||!lastVerdict.witness)return;assisted=true;history.push(p.slice());p=lastVerdict.witness.slice();selected=null;close('verdict');say('Referee’s counterexample loaded. Inspect it, then keep or revise your witnesses.');render(true);};
+ new ResizeObserver(()=>{if(c)render();}).observe($('loom'));
+ start(0);open('welcome');
+})();
+</script>
+</body>
+</html>
